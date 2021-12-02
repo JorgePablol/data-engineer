@@ -6,13 +6,23 @@ from sql_queries import *
 
 
 def process_song_file(cur, filepath):
+    """
+    Loads the songfile to a dataframe like form, filters by
+    the desired columns the first part filters and uploads the
+    song records and the second part inserts the artist records
+    
+    @cur: cursor object
+    @filepath: the path of the json that will be read
+    """
     # open song file
     df = pd.read_json(filepath, typ='series')
 
     # insert song record
     song_data = df[['song_id', 'title', 'artist_id', 'year', 'duration']]
+    
     song_data = list(song_data.values)
-    cur.execute(song_table_insert, song_data)
+    if song_data[0] != '' or song_data[0] != None:
+        cur.execute(song_table_insert, song_data)
     
     # insert artist record
     artist_data = df[['artist_id', 'name', 'location', 'latitude', 'longitude']]
@@ -21,6 +31,17 @@ def process_song_file(cur, filepath):
 
 
 def process_log_file(cur, filepath):
+    """
+    Loads the json file with the log data, filters the file
+    by NextSong in the page column, converts the time value to
+    ms units and expands the time data to each of its columns and
+    derived data like the weekday, the week of the timestamps
+    
+    inserts the data into tables users, time, and songplay
+    
+    @cur: cursor object to communicate with the db
+    @filepath: the path to the data file
+    """
     # open log file
     df = pd.read_json(filepath, lines=True)
 
@@ -33,7 +54,7 @@ def process_log_file(cur, filepath):
     
     # insert time data records
     time_data = [
-        df['ts'].dt.time,
+        df['ts'].astype(str),
         df['ts'].dt.hour,
         df['ts'].dt.day,
         df['ts'].dt.week,
@@ -73,10 +94,21 @@ def process_log_file(cur, filepath):
 
         # insert songplay record
         songplay_data = (row.ts, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
-        cur.execute(songplay_table_insert, songplay_data)
+        if songplay_data[3]:
+            cur.execute(songplay_table_insert, songplay_data)
 
 
 def process_data(cur, conn, filepath, func):
+    """
+    Performs the ETL process depending on the
+    file and the function given by the arguments
+    
+    @cur: database cursor object
+    @conn: database connection object
+    @filepath: the path where the json files will be searched
+    @func: function that will be executed depending if the data
+        is log data or song data
+    """
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -96,6 +128,8 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
+    """executes the functions above but first performs a connection
+    to sparkify db"""
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
