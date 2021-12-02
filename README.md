@@ -15,17 +15,17 @@
  
  #### Fact table:
  1. Songplays: Which are the records in log data associates with song plays.
- * songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
+    * songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
  
  #### Dimension tables:
  2. Users
- * user_id, first_name, last_name, gender, level
+    * user_id, first_name, last_name, gender, level
  3. Songs
- * song_id, title, artist_id, year, duration
+    * song_id, title, artist_id, year, duration
  4. Artists
- * artist_id, name, location, latitude, longitude
+    * artist_id, name, location, latitude, longitude
  5. Time: Timestamps of records in songplays broken down into specific units
- * start_time, hour, day, week, month, year, weekday
+     * start_time, hour, day, week, month, year, weekday
  
  # How to run the python scripts
  To run the scripts first open a terminal, then perform the next commands:
@@ -33,13 +33,13 @@
  * python elt.py
  
  # Explanation of the files
- #### data
- The folder with log and song data files
- #### create_tables.py
+ #### [create_tables.py](https://github.com/JorgePablol/data-engineer/blob/main/create_tables.py)
  The python script that imports the psycopg2 module, connects to the database, imports the sql queries from sql_queries.py and creates the tables needed for the project, it also drops the tables.
- #### etl.ipynb
+ #### [etl.ipynb](https://github.com/JorgePablol/data-engineer/blob/main/etl.ipynb)
  Is a file that let you see a quick review of what is done in etl.py, but with explanations in markdown thanks to jupyter notebook.
- #### sql_queries.py
+#### [etl.py](https://github.com/JorgePablol/data-engineer/blob/main/etl.py)
+Here you perform the whole etl for all the files, in etl.ipynb you did something similar but only for one record of songs for example.
+ #### [sql_queries.py](https://github.com/JorgePablol/data-engineer/blob/main/sql_queries.py)
  Well this one is easy, it has in the actual sql statements that create tables, drop and insert data.
- #### test.ipynb
+ #### [test.ipynb](https://github.com/JorgePablol/data-engineer/blob/main/test.ipynb)
  This one let's you check if the tables you have created or the date you have inserted were inserted or created succesfully.
